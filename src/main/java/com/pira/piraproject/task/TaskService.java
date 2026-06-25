@@ -4,7 +4,6 @@ import com.pira.piraproject.user.LevelService;
 import com.pira.piraproject.user.User;
 import com.pira.piraproject.user.UserDetails;
 import com.pira.piraproject.user.UserRepository;
-import com.pira.piraproject.util.DATA;
 import com.pira.piraproject.util.GoldRules;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
