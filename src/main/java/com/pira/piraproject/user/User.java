@@ -1,7 +1,7 @@
 package com.pira.piraproject.user;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.pira.piraproject.util.DATA;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.Builder;
 @Entity
 @Table(name = "users")
 @Data
-@NoArgsConstructor(force = true)
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class User {
@@ -27,11 +27,15 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @Builder.Default
-    private Integer level = 1;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "level_id", nullable = false)
+    private Level level;
 
     @Builder.Default
     private Integer gold = 0;
+
+    @Builder.Default
+    private Integer xp = 0;
 
     @Builder.Default
     private Integer dailyStreak = 0;

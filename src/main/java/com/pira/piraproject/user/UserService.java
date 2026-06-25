@@ -1,20 +1,21 @@
 package com.pira.piraproject.user;
 
+import com.pira.piraproject.util.DATA;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final LevelService levelService;
 
-    // Spring automatically injects the repository here
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
+    @Transactional
     public User registerUser(User user) {
-        // Check if username already exists
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new RuntimeException("Username already taken!");
         }
@@ -24,6 +25,8 @@ public class UserService {
                 .password(user.getPassword())
                 .build();
 
+        newUser.setLevel(levelService.getLevel(DATA.LEVEL_1));
+
         return userRepository.save(newUser);
     }
 
@@ -32,11 +35,7 @@ public class UserService {
                 .filter(user -> user.getPassword().equals(password));
     }
 
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
-    }
-
-    public User getInfo(UserDetailsCustom userDetails) {
+    public User getInfo(UserDetails userDetails) {
         return userRepository.findById(userDetails.getId()).orElse(null);
     }
 }

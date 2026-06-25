@@ -22,7 +22,7 @@ public class UserController {
             User registeredUser = userService.registerUser(user);
             return ResponseEntity.ok(registeredUser);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().body("Internal error, please contact support");
         }
     }
 
@@ -37,12 +37,12 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getInfo(@AuthenticationPrincipal UserDetailsCustom userDetails) {
+    public ResponseEntity<?> getInfo(@AuthenticationPrincipal UserDetails userDetails) {
         try {
             User registeredUser = userService.getInfo(userDetails);
             return ResponseEntity.ok(registeredUser);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().body("Internal error, please contact support");
         }
     }
 }
