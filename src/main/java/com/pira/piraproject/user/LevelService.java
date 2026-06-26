@@ -26,4 +26,8 @@ public class LevelService {
     public Level getLevel(Long levelId) {
         return levelRepository.findById(levelId).orElse(null);
     }
+
+    public Level getLNextLevel(Long levelId) {
+        return levelRepository.findFirstByIdGreaterThanOrderByIdAsc(levelId).orElse(null);
+    }
 }

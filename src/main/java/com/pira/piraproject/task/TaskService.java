@@ -1,13 +1,16 @@
 package com.pira.piraproject.task;
 
+import com.pira.piraproject.enums.TaskDifficulty;
 import com.pira.piraproject.user.LevelService;
 import com.pira.piraproject.user.User;
 import com.pira.piraproject.user.UserDetails;
 import com.pira.piraproject.user.UserRepository;
-import com.pira.piraproject.util.GoldRules;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,8 +23,8 @@ public class TaskService {
 
     private final LevelService levelService;
 
-    public List<Task> getTasksByUserId(Long userId) {
-        return taskRepository.findByUserId(userId);
+    public List<Task> getTasksByUserId(Long userId, LocalDate dueDate) {
+        return taskRepository.findByUserIdAndDueDate(userId, dueDate);
     }
 
     public Task createTask(Long userId, Task task) {
@@ -40,8 +43,11 @@ public class TaskService {
             boolean willBeCompleted = !task.getCompleted();
             task.setCompleted(willBeCompleted);
 
-            int amount = willBeCompleted ? GoldRules.SIMPLE_TASK : -GoldRules.SIMPLE_TASK;
-            updateGoldXp(user, amount);
+            if(willBeCompleted)
+                task.setCompletedAt(LocalDateTime.now());
+            else task.setCompletedAt(null);
+
+            updateGoldXp(user, task);
 
             levelService.checkLevel(user);
 
@@ -50,9 +56,16 @@ public class TaskService {
         });
     }
 
-    private static void updateGoldXp(User user, int amount) {
-        user.setGold(user.getGold() + amount);
-        user.setXp(user.getXp() + amount);
+    private static void updateGoldXp(User user, Task task) {
+        TaskDifficulty diff = task.getDifficulty();
+        int multiplier = task.getCompleted()?1:-1;
+
+        int xpMod = multiplier*diff.getXpReward();
+        int goldMod = multiplier*diff.getGoldReward();
+
+        user.setGold(user.getGold() + goldMod);
+        user.setXp(user.getXp() + xpMod);
+
         verifyZeros(user);
     }
 
@@ -72,8 +85,10 @@ public class TaskService {
         User user = userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if(task.getCompleted())
-            updateGoldXp(user, -GoldRules.SIMPLE_TASK);
+        if(task.getCompleted()){
+            task.setCompleted(false);
+            updateGoldXp(user, task);
+        }
 
         userRepository.save(user);
 

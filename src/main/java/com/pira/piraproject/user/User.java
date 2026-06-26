@@ -31,6 +31,9 @@ public class User {
     @JoinColumn(name = "level_id", nullable = false)
     private Level level;
 
+    @Transient
+    private Level nextLevel;
+
     @Builder.Default
     private Integer gold = 0;
 

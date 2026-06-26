@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -17,8 +18,9 @@ public class TaskController {
     private final TaskService taskService;
 
     @GetMapping
-    public ResponseEntity<List<Task>> getTasks(@AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(taskService.getTasksByUserId(userDetails.getId()));
+    public ResponseEntity<List<Task>> getTasks(@AuthenticationPrincipal UserDetails userDetails,
+                                               @RequestParam LocalDate dueDate) {
+        return ResponseEntity.ok(taskService.getTasksByUserId(userDetails.getId(), dueDate));
     }
 
     @PostMapping("/new")

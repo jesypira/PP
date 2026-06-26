@@ -3,7 +3,6 @@ package com.pira.piraproject.user;
 import com.pira.piraproject.util.DATA;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 
@@ -27,15 +26,28 @@ public class UserService {
 
         newUser.setLevel(levelService.getLevel(DATA.LEVEL_1));
 
+        newUser.setNextLevel(levelService.getLNextLevel(DATA.LEVEL_1));
+
         return userRepository.save(newUser);
     }
 
     public Optional<User> login(String username, String password) {
-        return userRepository.findByUsername(username)
-                .filter(user -> user.getPassword().equals(password));
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isPresent()) {
+            if (user.get().getPassword().equals(password)) {
+                user.get().setNextLevel(levelService.getLNextLevel(user.get().getLevel().getId()));
+                return Optional.of(user.get());
+            }
+        }
+        return Optional.empty();
     }
 
     public User getInfo(UserDetails userDetails) {
-        return userRepository.findById(userDetails.getId()).orElse(null);
+        Optional<User> user = userRepository.findByUsername(userDetails.getUsername());
+        if(user.isPresent()) {
+            user.get().setNextLevel(levelService.getLNextLevel(user.get().getLevel().getId()));
+            return user.get();
+        }
+        return null;
     }
 }
