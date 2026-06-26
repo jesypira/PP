@@ -13,4 +13,5 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             "ORDER BY t.completed ASC, t.completedAt DESC, t.id DESC ")
     List<Task> findByUserIdAndDueDate(@Param("userId") Long userId, @Param("date") LocalDate date);
 
+    boolean existsByUserIdAndDueDateAndCompletedTrue(Long id, LocalDate dueDate);
 }

@@ -95,4 +95,8 @@ public class TaskService {
         taskRepository.deleteById(id);
         return true;
     }
+
+    public boolean existsByUserIdAndDueDateAndCompletedTrue(Long id, LocalDate dueDate) {
+        return taskRepository.existsByUserIdAndDueDateAndCompletedTrue(id, dueDate);
+    }
 }

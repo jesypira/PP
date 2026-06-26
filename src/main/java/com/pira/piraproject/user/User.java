@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "users")
 @Data
@@ -42,6 +44,8 @@ public class User {
 
     @Builder.Default
     private Integer dailyStreak = 0;
+
+    private LocalDate lastStreakUpdate;
 
     public User(Long id){
         this.id = id;
